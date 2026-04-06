@@ -120,6 +120,7 @@ DEFAULT_MAX_DATAGRAM_BYTES: Final = 8192
 # Data keys for storing info in hass.data
 DATA: Final = "data"
 DATA_ENTRIES: Final = "entries"
+DATA_CLIENT: Final = "client"
 DATA_COORDINATOR: Final = "coordinator"
 
 # Supported operating mode options (if used by select)
