@@ -182,12 +182,26 @@ class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
         device_id: str,
         description: GreeVersatiSensorDescription,
     ) -> None:
-        super().__init__(coordinator, device_id, description.param_key)
+        super().__init__(
+            coordinator,
+            device_id,
+            description.param_key,
+            unique_id_key=description.key,
+        )
         self.entity_description = description
 
     @property
+    def translation_key(self):
+        return self.entity_description.translation_key
+    
+    @property
     def native_value(self):
-        return (self.coordinator.data or {}).get(self.entity_description.param_key)
+        value = (self.coordinator.data or {}).get(self.entity_description.param_key)
+    
+        if value in (None, "", "null"):
+            return None
+    
+        return value
 
 
 class GreeVersatiWaterInTemperatureSensor(GreeVersatiEntity, SensorEntity):
