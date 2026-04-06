@@ -4,7 +4,11 @@ from dataclasses import dataclass
 
 from homeassistant.components.sensor import SensorEntity, SensorEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory, UnitOfTemperature, SIGNAL_STRENGTH_DECIBELS_MILLIWATT
+from homeassistant.const import (
+    EntityCategory,
+    SIGNAL_STRENGTH_DECIBELS_MILLIWATT,
+    UnitOfTemperature,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -13,6 +17,10 @@ from .constants import (
     DATA_COORDINATOR,
     DATA_ENTRIES,
     PARAM_ALL_ERR,
+    PARAM_ALL_IN_WAT_TEM_HI,
+    PARAM_ALL_IN_WAT_TEM_LO,
+    PARAM_ALL_OUT_WAT_TEM_HI,
+    PARAM_ALL_OUT_WAT_TEM_LO,
     PARAM_ASS_HT,
     PARAM_ELC_HE1_RUN_STA,
     PARAM_ELC_HE2_RUN_STA,
@@ -84,41 +92,49 @@ SENSOR_DESCRIPTIONS: tuple[GreeVersatiSensorDescription, ...] = (
         key="ass_ht",
         translation_key="ass_ht",
         param_key=PARAM_ASS_HT,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="elc_he1_run_sta",
         translation_key="elc_he1_run_sta",
         param_key=PARAM_ELC_HE1_RUN_STA,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="elc_he2_run_sta",
         translation_key="elc_he2_run_sta",
         param_key=PARAM_ELC_HE2_RUN_STA,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="wat_box_elc_he_run_sta",
         translation_key="wat_box_elc_he_run_sta",
         param_key=PARAM_WAT_BOX_ELC_HE_RUN_STA,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="quiet",
         translation_key="quiet",
         param_key=PARAM_QUIET,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="fast_ht_wter",
         translation_key="fast_ht_wter",
         param_key=PARAM_FAST_HT_WTER,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="emegcy",
         translation_key="emegcy",
         param_key=PARAM_EMEGCY,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="sy_an_fro_run_sta",
         translation_key="sy_an_fro_run_sta",
         param_key=PARAM_SY_AN_FRO_RUN_STA,
+        entity_registry_enabled_default=False,
     ),
     GreeVersatiSensorDescription(
         key="rssi",
@@ -164,7 +180,10 @@ async def async_setup_entry(
     device_id = entry.data[CONF_DEVICE_ID]
 
     entities = [
-        *(GreeVersatiSensor(coordinator, device_id, description) for description in SENSOR_DESCRIPTIONS),
+        *(
+            GreeVersatiSensor(coordinator, device_id, description)
+            for description in SENSOR_DESCRIPTIONS
+        ),
         GreeVersatiWaterInTemperatureSensor(coordinator, device_id),
         GreeVersatiWaterOutTemperatureSensor(coordinator, device_id),
         GreeVersatiWaterDeltaTSensor(coordinator, device_id),
@@ -191,31 +210,41 @@ class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
         self.entity_description = description
 
     @property
-    def translation_key(self):
+    def translation_key(self) -> str | None:
         return self.entity_description.translation_key
-    
+
     @property
     def native_value(self):
         value = (self.coordinator.data or {}).get(self.entity_description.param_key)
-    
+
         if value in (None, "", "null"):
             return None
-    
+
         return value
 
 
 class GreeVersatiWaterInTemperatureSensor(GreeVersatiEntity, SensorEntity):
     _attr_translation_key = "water_in_temperature"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_icon = "mdi:thermometer-water"
 
-    def __init__(self, coordinator: GreeVersatiCoordinator, device_id: str) -> None:
-        super().__init__(coordinator, device_id, "water_in_temperature", unique_id_key="water_in_temperature")
+    def __init__(
+        self,
+        coordinator: GreeVersatiCoordinator,
+        device_id: str,
+    ) -> None:
+        super().__init__(
+            coordinator,
+            device_id,
+            "water_in_temperature",
+            unique_id_key="water_in_temperature",
+        )
 
     @property
-    def native_value(self):
+    def native_value(self) -> float | None:
         data = self.coordinator.data or {}
-        hi = data.get("AllInWatTemHi")
-        lo = data.get("AllInWatTemLo")
+        hi = data.get(PARAM_ALL_IN_WAT_TEM_HI)
+        lo = data.get(PARAM_ALL_IN_WAT_TEM_LO)
         try:
             return round((int(hi) - 100) + (int(lo) / 10), 1)
         except (TypeError, ValueError):
@@ -225,15 +254,25 @@ class GreeVersatiWaterInTemperatureSensor(GreeVersatiEntity, SensorEntity):
 class GreeVersatiWaterOutTemperatureSensor(GreeVersatiEntity, SensorEntity):
     _attr_translation_key = "water_out_temperature"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_icon = "mdi:thermometer-water"
 
-    def __init__(self, coordinator: GreeVersatiCoordinator, device_id: str) -> None:
-        super().__init__(coordinator, device_id, "water_out_temperature", unique_id_key="water_out_temperature")
+    def __init__(
+        self,
+        coordinator: GreeVersatiCoordinator,
+        device_id: str,
+    ) -> None:
+        super().__init__(
+            coordinator,
+            device_id,
+            "water_out_temperature",
+            unique_id_key="water_out_temperature",
+        )
 
     @property
-    def native_value(self):
+    def native_value(self) -> float | None:
         data = self.coordinator.data or {}
-        hi = data.get("AllOutWatTemHi")
-        lo = data.get("AllOutWatTemLo")
+        hi = data.get(PARAM_ALL_OUT_WAT_TEM_HI)
+        lo = data.get(PARAM_ALL_OUT_WAT_TEM_LO)
         try:
             return round((int(hi) - 100) + (int(lo) / 10), 1)
         except (TypeError, ValueError):
@@ -243,16 +282,30 @@ class GreeVersatiWaterOutTemperatureSensor(GreeVersatiEntity, SensorEntity):
 class GreeVersatiWaterDeltaTSensor(GreeVersatiEntity, SensorEntity):
     _attr_translation_key = "water_delta_t"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_icon = "mdi:delta"
 
-    def __init__(self, coordinator: GreeVersatiCoordinator, device_id: str) -> None:
-        super().__init__(coordinator, device_id, "water_delta_t", unique_id_key="water_delta_t")
+    def __init__(
+        self,
+        coordinator: GreeVersatiCoordinator,
+        device_id: str,
+    ) -> None:
+        super().__init__(
+            coordinator,
+            device_id,
+            "water_delta_t",
+            unique_id_key="water_delta_t",
+        )
 
     @property
-    def native_value(self):
+    def native_value(self) -> float | None:
         data = self.coordinator.data or {}
         try:
-            tin = (int(data.get("AllInWatTemHi")) - 100) + (int(data.get("AllInWatTemLo")) / 10)
-            tout = (int(data.get("AllOutWatTemHi")) - 100) + (int(data.get("AllOutWatTemLo")) / 10)
+            tin = (int(data.get(PARAM_ALL_IN_WAT_TEM_HI)) - 100) + (
+                int(data.get(PARAM_ALL_IN_WAT_TEM_LO)) / 10
+            )
+            tout = (int(data.get(PARAM_ALL_OUT_WAT_TEM_HI)) - 100) + (
+                int(data.get(PARAM_ALL_OUT_WAT_TEM_LO)) / 10
+            )
             return round(tout - tin, 1)
         except (TypeError, ValueError):
             return None
