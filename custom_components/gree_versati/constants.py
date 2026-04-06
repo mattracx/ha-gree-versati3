@@ -6,7 +6,7 @@ from typing import Final
 from homeassistant.const import Platform
 
 # Domain for the integration
-domain: Final = "gree_versati"
+DOMAIN: Final = "gree_versati"
 
 # Configuration keys
 CONF_DEVICE_ID: Final = "device_id"
@@ -110,9 +110,9 @@ SERVICE_SET_PARAM: Final = "set_param"
 SERVICE_GET_PARAMS: Final = "get_params"
 
 # Service/parameter attributes
-ATR_KEY: Final = "key"
-ATR_KEYS: Final = "keys"
-ATR_VALUE: Final = "value"
+ATTR_KEY: Final = "key"
+ATTR_KEYS: Final = "keys"
+ATTR_VALUE: Final = "value"
 
 # Network settings
 DEFAULT_MAX_DATAGRAM_BYTES: Final = 8192
