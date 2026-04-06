@@ -136,4 +136,5 @@ PLATFORMS: Final[tuple[Platform, ...]] = (
     Platform.NUMBER,
     Platform.SELECT,
     Platform.SWITCH,
+    Platform.CLIMATE,
 )
