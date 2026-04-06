@@ -124,12 +124,13 @@ DATA_CLIENT: Final = "client"
 DATA_COORDINATOR: Final = "coordinator"
 
 # Supported operating mode options (if used by select)
-MODE_OPTIONS: Final = [
-    "eco",
-    "comfort",
-    "normal",
-    "boost",
-]
+MODE_OPTIONS: Final[dict[str, int]] = {
+    "Heat": 1,
+    "Cool": 5,
+    "Hot water": 2,
+    "Cool + hot water": 3,
+    "Heat + hot water": 4,
+}
 
 # List of supported platforms exposed by the integration
 PLATFORMS: Final[tuple[Platform, ...]] = (
