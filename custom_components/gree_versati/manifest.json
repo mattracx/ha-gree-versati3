@@ -5,7 +5,6 @@
   "documentation": "https://github.com/mattracx/ha-gree-versati3",
   "issue_tracker": "https://github.com/mattracx/ha-gree-versati3/issues",
   "codeowners": [
-    "@sarunasr",
     "@mattracx"
   ],
   "config_flow": true,
