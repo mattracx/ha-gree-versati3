@@ -34,6 +34,11 @@
     }
   },
   "entity": {
+    "climate": {
+      "climate_control": {
+        "name": "Heat pump"
+      }
+    },
     "number": {
       "he_wat_out_tem_set": {
         "name": "Heating water outlet setpoint"
