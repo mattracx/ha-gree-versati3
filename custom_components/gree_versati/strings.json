@@ -9,7 +9,7 @@
           "host": "Host",
           "port": "Port",
           "device_id": "Device ID",
-          "key": "AES key",
+          "key": "AES Key",
           "timeout": "Timeout (seconds)"
         }
       }
@@ -45,6 +45,18 @@
     "switch": {
       "power_control": {
         "name": "Power"
+      },
+      "quiet_mode": {
+        "name": "Quiet mode"
+      },
+      "fast_hot_water": {
+        "name": "Fast hot water"
+      },
+      "emergency_mode": {
+        "name": "Emergency mode"
+      },
+      "aux_heater": {
+        "name": "Aux heater"
       }
     },
     "select": {
