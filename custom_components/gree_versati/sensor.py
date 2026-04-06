@@ -74,6 +74,10 @@ async def async_setup_entry(
     runtime_data = hass.data[entry.domain][DATA_ENTRIES][entry.entry_id]
     coordinator = runtime_data[DATA_COORDINATOR]
     device_id = entry.data[CONF_DEVICE_ID]
+    GreeVersatiWaterInletTempSensor(coordinator, device_id),
+    GreeVersatiWaterOutletTempSensor(coordinator, device_id),
+    GreeVersatiRSSISensor(coordinator, device_id),
+    GreeVersatiErrorSensor(coordinator, device_id),
 
     async_add_entities(
         GreeVersatiSensor(coordinator, device_id, description)
@@ -99,3 +103,43 @@ class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
     def native_value(self) -> str | int | float | bool | None:
         """Return raw protocol value."""
         return (self.coordinator.data or {}).get(self.entity_description.param_key)
+class GreeVersatiWaterInletTempSensor(GreeVersatiEntity, SensorEntity):
+    _attr_name = "Water Inlet Temperature"
+    _attr_native_unit_of_measurement = "°C"
+
+    def _handle_coordinator_update(self):
+        hi = self.coordinator.data.get("AllInWatTemHi")
+        lo = self.coordinator.data.get("AllInWatTemLo")
+
+        if hi is not None and lo is not None:
+            self._attr_native_value = ((hi << 8) | lo) / 10
+        self.async_write_ha_state()
+
+
+class GreeVersatiWaterOutletTempSensor(GreeVersatiEntity, SensorEntity):
+    _attr_name = "Water Outlet Temperature"
+    _attr_native_unit_of_measurement = "°C"
+
+    def _handle_coordinator_update(self):
+        hi = self.coordinator.data.get("AllOutWatTemHi")
+        lo = self.coordinator.data.get("AllOutWatTemLo")
+
+        if hi is not None and lo is not None:
+            self._attr_native_value = ((hi << 8) | lo) / 10
+        self.async_write_ha_state()
+
+class GreeVersatiRSSISensor(GreeVersatiEntity, SensorEntity):
+    _attr_name = "WiFi Signal"
+    _attr_native_unit_of_measurement = "dBm"
+
+    def _handle_coordinator_update(self):
+        self._attr_native_value = self.coordinator.data.get("rssi")
+        self.async_write_ha_state()
+
+
+class GreeVersatiErrorSensor(GreeVersatiEntity, SensorEntity):
+    _attr_name = "Error Code"
+
+    def _handle_coordinator_update(self):
+        self._attr_native_value = self.coordinator.data.get("AllErr")
+        self.async_write_ha_state()
