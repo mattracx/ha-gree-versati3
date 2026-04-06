@@ -76,3 +76,7 @@ class GreeVersatiPowerSwitch(GreeVersatiEntity, SwitchEntity):
         """Turn off power."""
         await self._client.async_set({PARAM_POW: 0})
         await self.coordinator.async_request_refresh()
+
+class GreeVersatiQuietSwitch(GreeVersatiSwitch):
+    _param = "Quiet"
+    _attr_name = "Quiet Mode"
