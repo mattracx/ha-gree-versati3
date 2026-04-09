@@ -4,8 +4,8 @@ import asyncio
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
-    HVACMode,
     ClimateEntityFeature,
+    HVACMode,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTemperature
@@ -27,7 +27,6 @@ from .constants import (
 )
 from .coordinator import GreeVersatiCoordinator
 from .entity import GreeVersatiEntity
-
 
 MODE_TO_HVAC: dict[int, HVACMode] = {
     1: HVACMode.HEAT,
@@ -110,6 +109,9 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
         hi = data.get(PARAM_ALL_OUT_WAT_TEM_HI)
         lo = data.get(PARAM_ALL_OUT_WAT_TEM_LO)
 
+        if hi in (None, "", "null") or lo in (None, "", "null"):
+            return None
+
         try:
             return round((int(hi) - 100) + (int(lo) / 10), 1)
         except (TypeError, ValueError):
@@ -172,13 +174,7 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
         await self.coordinator.async_request_refresh()
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
-        """Set HVAC mode with fail-safe transition logic.
-
-        Rules:
-        - OFF -> just power off
-        - OFF -> HEAT/COOL = set mode, then power on
-        - HEAT <-> COOL while ON = power off first, wait, change mode, wait, power on
-        """
+        """Set HVAC mode with fail-safe transition logic."""
         if self._changing_mode:
             return
 
@@ -200,17 +196,14 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
 
             target_mode = HVAC_TO_MODE[hvac_mode]
 
-            # If unit is currently running, switch it off before changing mode
             if current_mode != HVACMode.OFF:
                 await self._client.async_set({PARAM_POW: 0})
                 await asyncio.sleep(3)
                 await self.coordinator.async_request_refresh()
 
-            # Change mode while unit is off
             await self._client.async_set({PARAM_MOD: target_mode})
             await asyncio.sleep(2)
 
-            # Power back on
             await self._client.async_set({PARAM_POW: 1})
             await asyncio.sleep(2)
 
