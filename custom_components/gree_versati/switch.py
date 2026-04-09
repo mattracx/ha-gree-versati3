@@ -11,11 +11,11 @@ from .constants import (
     DATA_CLIENT,
     DATA_COORDINATOR,
     DATA_ENTRIES,
+    PARAM_ASS_HT,
+    PARAM_EMEGCY,
+    PARAM_FAST_HT_WTER,
     PARAM_POW,
     PARAM_QUIET,
-    PARAM_FAST_HT_WTER,
-    PARAM_EMEGCY,
-    PARAM_ASS_HT,
 )
 from .coordinator import GreeVersatiCoordinator
 from .entity import GreeVersatiEntity
@@ -109,6 +109,7 @@ class GreeVersatiPowerSwitch(GreeVersatiBaseSwitch):
     """Power control switch."""
 
     _attr_translation_key = "power_control"
+    _attr_icon = "mdi:power"
 
     def __init__(
         self,
@@ -129,6 +130,7 @@ class GreeVersatiQuietSwitch(GreeVersatiBaseSwitch):
     """Quiet mode switch."""
 
     _attr_translation_key = "quiet_mode"
+    _attr_icon = "mdi:volume-low"
 
     def __init__(
         self,
@@ -149,6 +151,7 @@ class GreeVersatiFastHotWaterSwitch(GreeVersatiBaseSwitch):
     """Fast hot water switch."""
 
     _attr_translation_key = "fast_hot_water"
+    _attr_icon = "mdi:water-boiler-alert"
 
     def __init__(
         self,
@@ -169,6 +172,7 @@ class GreeVersatiEmergencySwitch(GreeVersatiBaseSwitch):
     """Emergency mode switch."""
 
     _attr_translation_key = "emergency_mode"
+    _attr_icon = "mdi:alert-octagon"
 
     def __init__(
         self,
@@ -189,6 +193,7 @@ class GreeVersatiAuxHeaterSwitch(GreeVersatiBaseSwitch):
     """Aux heater switch."""
 
     _attr_translation_key = "aux_heater"
+    _attr_icon = "mdi:heating-coil"
 
     def __init__(
         self,
