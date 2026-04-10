@@ -236,10 +236,8 @@ class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
     @property
     def native_value(self):
         value = (self.coordinator.data or {}).get(self.entity_description.param_key)
-
         if value in (None, "", "null"):
             return None
-
         return value
 
 
