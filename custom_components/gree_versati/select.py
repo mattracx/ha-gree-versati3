@@ -1,11 +1,8 @@
-"""Select platform for Gree Versati."""
-
 from __future__ import annotations
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .client import GreeVersatiProtocolClient
@@ -16,12 +13,10 @@ from .constants import (
     DATA_ENTRIES,
     MODE_OPTIONS,
     PARAM_MOD,
-    PARAM_POW,
 )
 from .coordinator import GreeVersatiCoordinator
 from .entity import GreeVersatiEntity
 
-_MODE_BY_LABEL = MODE_OPTIONS
 _LABEL_BY_MODE = {value: key for key, value in MODE_OPTIONS.items()}
 
 
@@ -30,8 +25,8 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up select entities."""
     runtime_data = hass.data[entry.domain][DATA_ENTRIES][entry.entry_id]
+
     async_add_entities(
         [
             GreeVersatiModeSelect(
@@ -44,10 +39,8 @@ async def async_setup_entry(
 
 
 class GreeVersatiModeSelect(GreeVersatiEntity, SelectEntity):
-    """Mode control select entity."""
-
     _attr_translation_key = "mode_control"
-    _attr_options = list(_MODE_BY_LABEL)
+    _attr_icon = "mdi:tune-variant"
 
     def __init__(
         self,
@@ -59,35 +52,21 @@ class GreeVersatiModeSelect(GreeVersatiEntity, SelectEntity):
             coordinator,
             device_id,
             PARAM_MOD,
-            unique_id_key="mode_select",
+            unique_id_key="mode_control",
         )
         self._client = client
+        self._attr_options = list(MODE_OPTIONS.keys())
 
     @property
     def current_option(self) -> str | None:
-        """Return selected mode option."""
-        raw_value = (self.coordinator.data or {}).get(PARAM_MOD)
-        if raw_value is None:
-            return None
+        value = (self.coordinator.data or {}).get(PARAM_MOD)
         try:
-            return _LABEL_BY_MODE.get(int(raw_value))
+            return _LABEL_BY_MODE.get(int(value))
         except (TypeError, ValueError):
             return None
 
     async def async_select_option(self, option: str) -> None:
-        """Change operation mode."""
-        power_value = (self.coordinator.data or {}).get(PARAM_POW)
-        if power_value is None:
-            raise HomeAssistantError(
-                "Cannot change mode while power state is unavailable"
-            )
-        try:
-            power_is_on = bool(int(power_value))
-        except (TypeError, ValueError):
-            power_is_on = bool(power_value)
-
-        if power_is_on:
-            raise HomeAssistantError("Turn off the unit before changing mode")
-
-        await self._client.async_set({PARAM_MOD: _MODE_BY_LABEL[option]})
+        if option not in MODE_OPTIONS:
+            return
+        await self._client.async_set({PARAM_MOD: MODE_OPTIONS[option]})
         await self.coordinator.async_request_refresh()
