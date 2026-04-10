@@ -61,6 +61,7 @@ PARAM_VER: Final = "ver"
 PARAM_HID: Final = "hid"
 PARAM_HOST: Final = "host"
 PARAM_VENDER: Final = "vender"
+PARAM_MAC: Final = "mac"
 
 POLL_KEYS: Final[tuple[str, ...]] = (
     PARAM_HE_WAT_OUT_TEM_SET,
@@ -92,6 +93,7 @@ POLL_KEYS: Final[tuple[str, ...]] = (
     PARAM_HID,
     PARAM_HOST,
     PARAM_VENDER,
+    PARAM_MAC
 )
 
 SERVICE_SET_PARAM: Final = "set_param"
