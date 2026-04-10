@@ -26,7 +26,6 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up switch entities."""
     runtime_data = hass.data[entry.domain][DATA_ENTRIES][entry.entry_id]
 
     async_add_entities(
@@ -61,9 +60,6 @@ async def async_setup_entry(
 
 
 class GreeVersatiBaseSwitch(GreeVersatiEntity, SwitchEntity):
-    """Base switch for writable boolean-ish parameters."""
-
-    _attr_translation_key = None
     _param_key: str
 
     def __init__(
@@ -85,29 +81,24 @@ class GreeVersatiBaseSwitch(GreeVersatiEntity, SwitchEntity):
 
     @property
     def is_on(self) -> bool | None:
-        """Return switch state."""
         value = (self.coordinator.data or {}).get(self._param_key)
-        if value is None:
+        if value in (None, "", "null"):
             return None
         try:
             return bool(int(value))
         except (TypeError, ValueError):
             return bool(value)
 
-    async def async_turn_on(self, **kwargs: object) -> None:
-        """Turn on."""
+    async def async_turn_on(self, **kwargs) -> None:
         await self._client.async_set({self._param_key: 1})
         await self.coordinator.async_request_refresh()
 
-    async def async_turn_off(self, **kwargs: object) -> None:
-        """Turn off."""
+    async def async_turn_off(self, **kwargs) -> None:
         await self._client.async_set({self._param_key: 0})
         await self.coordinator.async_request_refresh()
 
 
 class GreeVersatiPowerSwitch(GreeVersatiBaseSwitch):
-    """Power control switch."""
-
     _attr_translation_key = "power_control"
     _attr_icon = "mdi:power"
 
@@ -122,13 +113,11 @@ class GreeVersatiPowerSwitch(GreeVersatiBaseSwitch):
             device_id,
             client,
             PARAM_POW,
-            unique_id_key="power_switch",
+            unique_id_key="power_control",
         )
 
 
 class GreeVersatiQuietSwitch(GreeVersatiBaseSwitch):
-    """Quiet mode switch."""
-
     _attr_translation_key = "quiet_mode"
     _attr_icon = "mdi:volume-low"
 
@@ -143,13 +132,11 @@ class GreeVersatiQuietSwitch(GreeVersatiBaseSwitch):
             device_id,
             client,
             PARAM_QUIET,
-            unique_id_key="quiet_switch",
+            unique_id_key="quiet_mode",
         )
 
 
 class GreeVersatiFastHotWaterSwitch(GreeVersatiBaseSwitch):
-    """Fast hot water switch."""
-
     _attr_translation_key = "fast_hot_water"
     _attr_icon = "mdi:water-boiler-alert"
 
@@ -164,13 +151,11 @@ class GreeVersatiFastHotWaterSwitch(GreeVersatiBaseSwitch):
             device_id,
             client,
             PARAM_FAST_HT_WTER,
-            unique_id_key="fast_hot_water_switch",
+            unique_id_key="fast_hot_water",
         )
 
 
 class GreeVersatiEmergencySwitch(GreeVersatiBaseSwitch):
-    """Emergency mode switch."""
-
     _attr_translation_key = "emergency_mode"
     _attr_icon = "mdi:alert-octagon"
 
@@ -185,13 +170,11 @@ class GreeVersatiEmergencySwitch(GreeVersatiBaseSwitch):
             device_id,
             client,
             PARAM_EMEGCY,
-            unique_id_key="emergency_switch",
+            unique_id_key="emergency_mode",
         )
 
 
 class GreeVersatiAuxHeaterSwitch(GreeVersatiBaseSwitch):
-    """Aux heater switch."""
-
     _attr_translation_key = "aux_heater"
     _attr_icon = "mdi:heating-coil"
 
@@ -206,5 +189,5 @@ class GreeVersatiAuxHeaterSwitch(GreeVersatiBaseSwitch):
             device_id,
             client,
             PARAM_ASS_HT,
-            unique_id_key="aux_heater_switch",
+            unique_id_key="aux_heater",
         )
