@@ -101,6 +101,7 @@ class GreeVersatiBaseSwitch(GreeVersatiEntity, SwitchEntity):
 class GreeVersatiPowerSwitch(GreeVersatiBaseSwitch):
     _attr_translation_key = "power_control"
     _attr_icon = "mdi:power"
+    _attr_name = "Power"
 
     def __init__(
         self,
@@ -119,7 +120,8 @@ class GreeVersatiPowerSwitch(GreeVersatiBaseSwitch):
 
 class GreeVersatiQuietSwitch(GreeVersatiBaseSwitch):
     _attr_translation_key = "quiet_mode"
-    _attr_icon = "mdi:volume-low"
+    _attr_icon = "mdi:sleep"
+    _attr_name = "Quiet Mode"
 
     def __init__(
         self,
@@ -139,6 +141,7 @@ class GreeVersatiQuietSwitch(GreeVersatiBaseSwitch):
 class GreeVersatiFastHotWaterSwitch(GreeVersatiBaseSwitch):
     _attr_translation_key = "fast_hot_water"
     _attr_icon = "mdi:water-boiler-alert"
+    _attr_name = "Fast Hot Water"
 
     def __init__(
         self,
@@ -157,7 +160,8 @@ class GreeVersatiFastHotWaterSwitch(GreeVersatiBaseSwitch):
 
 class GreeVersatiEmergencySwitch(GreeVersatiBaseSwitch):
     _attr_translation_key = "emergency_mode"
-    _attr_icon = "mdi:alert-octagon"
+    _attr_icon = "mdi:alert"
+    _attr_name = "Emergency Mode"
 
     def __init__(
         self,
@@ -176,7 +180,8 @@ class GreeVersatiEmergencySwitch(GreeVersatiBaseSwitch):
 
 class GreeVersatiAuxHeaterSwitch(GreeVersatiBaseSwitch):
     _attr_translation_key = "aux_heater"
-    _attr_icon = "mdi:heating-coil"
+    _attr_icon = "mdi:radiator"
+    _attr_name = "Aux Heater"
 
     def __init__(
         self,
