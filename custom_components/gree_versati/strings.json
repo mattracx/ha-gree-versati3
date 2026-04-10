@@ -36,7 +36,7 @@
   "entity": {
     "climate": {
       "climate_control": {
-        "name": "Heat pump"
+        "name": "Chiller - Heat Pump"
       }
     },
     "number": {
