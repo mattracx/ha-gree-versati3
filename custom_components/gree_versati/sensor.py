@@ -242,7 +242,8 @@ class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
 
 
 class GreeVersatiWaterInTemperatureSensor(GreeVersatiEntity, SensorEntity):
-    _attr_translation_key = "water_in_temperature"
+    _attr_has_entity_name = True
+    _attr_name = "Water return temperature"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_icon = "mdi:thermometer-chevron-down"
 
@@ -274,7 +275,8 @@ class GreeVersatiWaterInTemperatureSensor(GreeVersatiEntity, SensorEntity):
 
 
 class GreeVersatiWaterOutTemperatureSensor(GreeVersatiEntity, SensorEntity):
-    _attr_translation_key = "water_out_temperature"
+    _attr_has_entity_name = True
+    _attr_name = "Water supply temperature"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_icon = "mdi:thermometer-chevron-up"
 
