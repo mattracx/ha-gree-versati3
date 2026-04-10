@@ -28,6 +28,7 @@ from .constants import (
     PARAM_FAST_HT_WTER,
     PARAM_HE_WAT_OUT_TEM_SET,
     PARAM_JF_ERROR_CODE,
+    PARAM_MAC,
     PARAM_MOD,
     PARAM_MODEL_TYPE,
     PARAM_POW,
@@ -95,14 +96,12 @@ SENSOR_DESCRIPTIONS: tuple[GreeVersatiSensorDescription, ...] = (
         param_key=PARAM_POW,
         icon="mdi:power",
     ),
-
-    # --- INTERNAL / OPTIONAL (disabled by default) ---
     GreeVersatiSensorDescription(
         key="ass_ht",
         name="Aux heater status",
         param_key=PARAM_ASS_HT,
         entity_registry_enabled_default=False,
-        icon="mdi:heating-coil",
+        icon="mdi:radiator",
     ),
     GreeVersatiSensorDescription(
         key="elc_he1_run_sta",
@@ -130,21 +129,21 @@ SENSOR_DESCRIPTIONS: tuple[GreeVersatiSensorDescription, ...] = (
         name="Quiet mode status",
         param_key=PARAM_QUIET,
         entity_registry_enabled_default=False,
-        icon="mdi:volume-low",
+        icon="mdi:sleep",
     ),
     GreeVersatiSensorDescription(
         key="fast_ht_wter",
         name="Fast hot water status",
         param_key=PARAM_FAST_HT_WTER,
         entity_registry_enabled_default=False,
-        icon="mdi:water-boiler-alert",
+        icon="mdi:water-boiler",
     ),
     GreeVersatiSensorDescription(
         key="emegcy",
         name="Emergency mode status",
         param_key=PARAM_EMEGCY,
         entity_registry_enabled_default=False,
-        icon="mdi:alert-octagon",
+        icon="mdi:alert",
     ),
     GreeVersatiSensorDescription(
         key="sy_an_fro_run_sta",
@@ -153,8 +152,6 @@ SENSOR_DESCRIPTIONS: tuple[GreeVersatiSensorDescription, ...] = (
         entity_registry_enabled_default=False,
         icon="mdi:snowflake-alert",
     ),
-
-    # --- DIAGNOSTICS ---
     GreeVersatiSensorDescription(
         key="rssi",
         name="Wi-Fi signal",
@@ -200,29 +197,33 @@ SENSOR_DESCRIPTIONS: tuple[GreeVersatiSensorDescription, ...] = (
     ),
 )
 
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
+    """Set up Gree Versati sensors."""
     runtime_data = hass.data[entry.domain][DATA_ENTRIES][entry.entry_id]
     coordinator = runtime_data[DATA_COORDINATOR]
     device_id = entry.data[CONF_DEVICE_ID]
 
-    entities = [
-        *(
-            GreeVersatiSensor(coordinator, device_id, description)
-            for description in SENSOR_DESCRIPTIONS
-        ),
-        GreeVersatiWaterInTemperatureSensor(coordinator, device_id),
-        GreeVersatiWaterOutTemperatureSensor(coordinator, device_id),
-        GreeVersatiWaterDeltaTSensor(coordinator, device_id),
-    ]
-
-    async_add_entities(entities)
+    async_add_entities(
+        [
+            *(
+                GreeVersatiSensor(coordinator, device_id, description)
+                for description in SENSOR_DESCRIPTIONS
+            ),
+            GreeVersatiWaterInTemperatureSensor(coordinator, device_id),
+            GreeVersatiWaterOutTemperatureSensor(coordinator, device_id),
+            GreeVersatiWaterDeltaTSensor(coordinator, device_id),
+        ]
+    )
 
 
 class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
+    """Generic coordinator-backed sensor."""
+
     entity_description: GreeVersatiSensorDescription
 
     def __init__(
@@ -240,10 +241,6 @@ class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
         self.entity_description = description
 
     @property
-    def translation_key(self) -> str | None:
-        return self.entity_description.translation_key
-
-    @property
     def native_value(self):
         value = (self.coordinator.data or {}).get(self.entity_description.param_key)
         if value in (None, "", "null"):
@@ -252,6 +249,8 @@ class GreeVersatiSensor(GreeVersatiEntity, SensorEntity):
 
 
 class GreeVersatiWaterInTemperatureSensor(GreeVersatiEntity, SensorEntity):
+    """Water return temperature."""
+
     _attr_has_entity_name = True
     _attr_name = "Water return temperature"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
@@ -285,6 +284,8 @@ class GreeVersatiWaterInTemperatureSensor(GreeVersatiEntity, SensorEntity):
 
 
 class GreeVersatiWaterOutTemperatureSensor(GreeVersatiEntity, SensorEntity):
+    """Water supply temperature."""
+
     _attr_has_entity_name = True
     _attr_name = "Water supply temperature"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
@@ -318,7 +319,10 @@ class GreeVersatiWaterOutTemperatureSensor(GreeVersatiEntity, SensorEntity):
 
 
 class GreeVersatiWaterDeltaTSensor(GreeVersatiEntity, SensorEntity):
-    _attr_translation_key = "water_delta_t"
+    """Water delta-T."""
+
+    _attr_has_entity_name = True
+    _attr_name = "Water ΔT"
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
     _attr_icon = "mdi:delta"
 
