@@ -4,8 +4,8 @@ import asyncio
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
-    ClimateEntityFeature,
     HVACMode,
+    ClimateEntityFeature,
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import UnitOfTemperature
@@ -28,6 +28,7 @@ from .constants import (
 from .coordinator import GreeVersatiCoordinator
 from .entity import GreeVersatiEntity
 
+
 MODE_TO_HVAC: dict[int, HVACMode] = {
     1: HVACMode.HEAT,
     5: HVACMode.COOL,
@@ -44,7 +45,6 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up climate entity."""
     runtime_data = hass.data[entry.domain][DATA_ENTRIES][entry.entry_id]
 
     async_add_entities(
@@ -59,8 +59,6 @@ async def async_setup_entry(
 
 
 class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
-    """Climate entity for Gree Versati."""
-
     _attr_translation_key = "climate_control"
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_hvac_modes = [HVACMode.OFF, HVACMode.HEAT, HVACMode.COOL]
@@ -84,7 +82,6 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
 
     @property
     def hvac_mode(self) -> HVACMode:
-        """Return current HVAC mode."""
         data = self.coordinator.data or {}
 
         try:
@@ -104,13 +101,9 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
 
     @property
     def current_temperature(self) -> float | None:
-        """Use leaving water temperature as current climate temperature."""
         data = self.coordinator.data or {}
         hi = data.get(PARAM_ALL_OUT_WAT_TEM_HI)
         lo = data.get(PARAM_ALL_OUT_WAT_TEM_LO)
-
-        if hi in (None, "", "null") or lo in (None, "", "null"):
-            return None
 
         try:
             return round((int(hi) - 100) + (int(lo) / 10), 1)
@@ -119,7 +112,6 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
 
     @property
     def target_temperature(self) -> float | None:
-        """Return active target temperature depending on current mode."""
         data = self.coordinator.data or {}
         mode = self.hvac_mode
 
@@ -135,25 +127,21 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
 
     @property
     def min_temp(self) -> float:
-        """Return minimum target temperature depending on active mode."""
         if self.hvac_mode == HVACMode.COOL:
             return 5.0
         return 20.0
 
     @property
     def max_temp(self) -> float:
-        """Return maximum target temperature depending on active mode."""
         if self.hvac_mode == HVACMode.COOL:
             return 25.0
         return 60.0
 
     @property
     def target_temperature_step(self) -> float:
-        """Return target temperature step."""
         return 1.0
 
     async def async_set_temperature(self, **kwargs) -> None:
-        """Set the correct setpoint depending on active mode."""
         temperature = kwargs.get("temperature")
         if temperature is None:
             return
@@ -174,7 +162,6 @@ class GreeVersatiClimate(GreeVersatiEntity, ClimateEntity):
         await self.coordinator.async_request_refresh()
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
-        """Set HVAC mode with fail-safe transition logic."""
         if self._changing_mode:
             return
 
