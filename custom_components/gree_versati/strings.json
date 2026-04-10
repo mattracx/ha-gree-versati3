@@ -1,5 +1,5 @@
 {
-  "title": "Gree Heat Pump",
+  "title": "Gree - Chiller/Heat Pump",
   "config": {
     "step": {
       "user": {
@@ -36,18 +36,18 @@
   "entity": {
     "climate": {
       "climate_control": {
-        "name": "Chiller - Heat Pump"
+        "name": "Thermostat"
       }
     },
     "number": {
       "he_wat_out_tem_set": {
-        "name": "Heating water outlet setpoint"
+        "name": "Heating Water Outlet setpoint"
       },
       "co_wat_out_temp_set": {
-        "name": "Cooling water outlet setpoint"
+        "name": "Cooling Water Outlet setpoint"
       },
       "wat_box_tem_set": {
-        "name": "Water box temperature setpoint"
+        "name": "Water Box Temperature setpoint"
       }
     },
     "switch": {
@@ -74,16 +74,16 @@
     },
     "sensor": {
       "he_wat_out_tem_set": {
-        "name": "Heating water outlet setpoint"
+        "name": "Heating Water Outlet setpoint"
       },
       "wat_box_tem_set": {
-        "name": "Water box temperature setpoint"
+        "name": "Water Box Temperature setpoint"
       },
       "tem_un": {
         "name": "Temperature unit"
       },
       "all_err": {
-        "name": "Error code"
+        "name": "Error Code"
       },
       "jf_error_code": {
         "name": "JF error code"
@@ -104,7 +104,7 @@
         "name": "Electric heater 2 status"
       },
       "wat_box_elc_he_run_sta": {
-        "name": "Water box heater status"
+        "name": "Water Box Heater status"
       },
       "quiet": {
         "name": "Quiet status"
@@ -119,25 +119,25 @@
         "name": "System antifreeze status"
       },
       "rssi": {
-        "name": "Wi-Fi signal"
+        "name": "RSSI"
       },
       "versati_series": {
-        "name": "Versati series"
+        "name": "Series"
       },
       "model_type": {
-        "name": "Model type"
+        "name": "Model Type"
       },
       "ver": {
-        "name": "Firmware version"
+        "name": "Firmware Version"
       },
       "vender": {
         "name": "Vendor"
       },
       "water_in_temperature": {
-        "name": "Water return temperature"
+        "name": "Water Return Temperature"
       },
       "water_out_temperature": {
-        "name": "Water supply temperature"
+        "name": "Water Supply Temperature"
       },
       "water_delta_t": {
         "name": "Water ΔT"
