@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from homeassistant.helpers.device_registry import CONNECTION_NETWORK_MAC
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
 
-from .constants import DOMAIN
+from .constants import DOMAIN, PARAM_MAC
 
 
 class GreeVersatiEntity(CoordinatorEntity):
@@ -26,11 +27,20 @@ class GreeVersatiEntity(CoordinatorEntity):
     @property
     def device_info(self) -> dict:
         data = self.coordinator.data or {}
-        model = data.get("ModelType") or "Versati 3"
+
+        model_type = data.get("ModelType")
+        mac = data.get(PARAM_MAC)
+
+        connections = set()
+        if isinstance(mac, str) and mac:
+            # Normalize to lower-case colon-separated MAC
+            normalized_mac = mac.strip().lower().replace("-", ":")
+            connections.add((CONNECTION_NETWORK_MAC, normalized_mac))
 
         return {
             "identifiers": {(DOMAIN, self._device_id)},
+            "connections": connections,
             "name": "Chiller - Heat Pump",
             "manufacturer": "Gree",
-            "model": str(model),
+            "model": "Versati 3" if not model_type else f"Versati 3 ({model_type})",
         }
